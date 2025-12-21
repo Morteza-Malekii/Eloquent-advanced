@@ -22,7 +22,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
 Route::get('/where',function(){
     $keywords = request()->input('query');
     if(is_null($keywords)){
@@ -37,11 +36,8 @@ Route::get('/where',function(){
     return $post;
 });
 Route::get('/allpost',function(){
-
     // $posts = Post::all();
     $posts = Post::query()->get();
-
-
     return $posts;
 });
 
@@ -50,5 +46,12 @@ Route::get('/filter',function(){
     if(is_null($keywords)){
         abort(404);
     }
-    return $posts = Post::Filter($keywords)->get();
+    return $posts = Post::Filter($keywords)->cursorPaginate(5);
+});
+Route::get('/order',function(){
+
+    return $posts = Post::query()->where('title','prof.')
+            ->orWhere('title','dr.')
+            ->oldest('id')
+            ->paginate(10);
 });
