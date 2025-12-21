@@ -49,9 +49,21 @@ Route::get('/filter',function(){
     return $posts = Post::Filter($keywords)->cursorPaginate(5);
 });
 Route::get('/order',function(){
-
     return $posts = Post::query()->where('title','prof.')
             ->orWhere('title','dr.')
             ->oldest('id')
             ->paginate(10);
+});
+Route::get('/when',function(){
+    $keywords = request()->input('key');
+    return $posts = Post::query()
+        ->when($keywords,
+        function ($q, $keywords) {
+            $q->where(function($qq) use ($keywords){
+                $qq->where('body','LIKE',"%$keywords%")
+                ->where('title','prof.');
+            } );
+        },function ($q) {
+            $q->latest('id');
+        })->get();
 });
