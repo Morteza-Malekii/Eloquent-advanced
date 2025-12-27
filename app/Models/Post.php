@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\activeScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,5 +21,10 @@ class Post extends Model
                 return $query->where('title', $keywords)->where('body', 'LIKE', '%%');
             })
             ->where('updated_at', '>', '2025-01-01');
+    }
+
+    protected static function booted():void
+    {
+        static::addGlobalScope(new activeScope);
     }
 }

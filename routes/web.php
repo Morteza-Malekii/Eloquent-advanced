@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
+use App\Models\Scopes\activeScope;
 use Faker\Factory;
 use Illuminate\Support\Facades\DB;
 
@@ -78,4 +79,9 @@ Route::get('/groupBy',function(){
     ->groupBy('title')
     ->having('title','Dr.')
     ->get();
+});
+
+Route::get('/globalScope', function(){
+    // return Post::withoutGlobalScope(activeScope::class)->get();
+    return Post::get();
 });
