@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
 use Faker\Factory;
+use Illuminate\Support\Facades\DB;
 
 use function PHPUnit\Framework\isNull;
 
@@ -48,12 +49,14 @@ Route::get('/filter',function(){
     }
     return $posts = Post::Filter($keywords)->cursorPaginate(5);
 });
+
 Route::get('/order',function(){
     return $posts = Post::query()->where('title','prof.')
             ->orWhere('title','dr.')
             ->oldest('id')
             ->paginate(10);
 });
+
 Route::get('/when',function(){
     $keywords = request()->input('key');
     return $posts = Post::query()
@@ -66,4 +69,13 @@ Route::get('/when',function(){
         },function ($q) {
             $q->latest('id');
         })->get();
+});
+
+Route::get('/groupBy',function(){
+    return $title = Post::query()
+    ->where('created_at','<','2024-02-03')
+    ->select('title',DB::raw('COUNT(*) as total'))
+    ->groupBy('title')
+    ->having('title','Dr.')
+    ->get();
 });
