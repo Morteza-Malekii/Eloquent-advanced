@@ -23,8 +23,8 @@ class Post extends Model
             ->where('updated_at', '>', '2025-01-01');
     }
 
-    protected static function booted():void
-    {
-        static::addGlobalScope(new activeScope);
-    }
+    // protected static function booted():void
+    // {
+    //     static::addGlobalScope(new activeScope);
+    // }
 }

@@ -13,6 +13,6 @@ class activeScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->where('title','Prof.');
+        // $builder->where('title','Prof.');
     }
 }
