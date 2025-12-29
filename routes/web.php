@@ -3,9 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
 use App\Models\Scopes\activeScope;
+use App\Models\User;
 use Faker\Factory;
 use Illuminate\Support\Facades\DB;
 
+use function PHPSTORM_META\map;
 use function PHPUnit\Framework\isNull;
 
 Route::get('/create', function () {
@@ -84,4 +86,42 @@ Route::get('/groupBy',function(){
 Route::get('/globalScope', function(){
     // return Post::withoutGlobalScope(activeScope::class)->get();
     return Post::get();
+});
+
+Route::get('/subquery',function(){
+    $posts = Post::select('title','body','user_id')
+    ->get();
+    $posts = $posts->map(function($post){
+        $totalpost = Post::where('user_id',$post->user_id)->count();
+        $post->totalPost = $totalpost;
+        return $post;
+    });
+    return $posts;
+});
+
+Route::get('/selectRaw',function(){
+    $posts = Post::query()
+    ->selectRaw('user_id,count(*) as totalPost')
+    ->groupBy('user_id')
+    ->orderBy('user_id','asc')
+    ->get();
+    return $posts;
+});
+Route::get('/with',function(){
+    $users = User::all();
+    foreach($users as $user){
+        echo $user->post->count();
+    }
+
+});
+Route::get('/whereIn',function(){
+    $posts = Post::query()
+    ->whereIn('user_id',function($query){
+        $query->select('id')
+        ->from('users')
+        ->where('created_at','<','2025-01-01');
+    })->get();
+
+    return $posts;
+
 });
