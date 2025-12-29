@@ -121,7 +121,15 @@ Route::get('/whereIn',function(){
         ->from('users')
         ->where('created_at','<','2025-01-01');
     })->get();
-
     return $posts;
-
 });
+Route::get('/havinRaw',function(){
+    $posts = Post::query()
+    ->selectRaw('user_id, count(*) as totalPost')
+    ->groupBy('user_id')
+    ->havingRaw('totalPost < ?',[22])
+    ->get();
+    return $posts;
+});
+
+
