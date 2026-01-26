@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\activeScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,4 +26,13 @@ class Post extends Model
     // {
     //     static::addGlobalScope(new activeScope);
     // }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function comments()
+    {
+        return $this->morphMany(Comment::class,'commentable');
+    }
 }

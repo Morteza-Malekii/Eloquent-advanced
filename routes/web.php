@@ -7,6 +7,7 @@ use App\Models\User;
 use Faker\Factory;
 use Illuminate\Support\Facades\DB;
 
+use function Laravel\Prompts\select;
 use function PHPSTORM_META\map;
 use function PHPUnit\Framework\isNull;
 
@@ -101,19 +102,14 @@ Route::get('/subquery',function(){
 
 Route::get('/selectRaw',function(){
     $posts = Post::query()
+    ->select('id','title','body','user_id')
     ->selectRaw('user_id,count(*) as totalPost')
     ->groupBy('user_id')
     ->orderBy('user_id','asc')
     ->get();
     return $posts;
 });
-Route::get('/with',function(){
-    $users = User::all();
-    foreach($users as $user){
-        echo $user->post->count();
-    }
 
-});
 Route::get('/whereIn',function(){
     $posts = Post::query()
     ->whereIn('user_id',function($query){
@@ -131,5 +127,109 @@ Route::get('/havinRaw',function(){
     ->get();
     return $posts;
 });
+//لیست کاربران +تاریخ آخرین پست هر کاربر
+Route::get('/selectSub',function(){
+    $users = User::select('name')
+    ->selectSub(
+        Post::select('created_at')
+        ->whereColumn('posts.user_id','users.id')
+        ->latest()
+        ->limit(1)
+        ,'last_post_at'
+        )
+    ->get();
+    return $users;
+});
+//لیست پستها همراه با تعداد پستهای نویسنده
+Route::get('/selectSub2',function(){
+    $posts = Post::query()
+    ->select('id', 'title', 'body', 'user_id')
+    ->selectSub(
+        Post::query()
+            ->selectRaw('COUNT(*)')
+            ->whereColumn('posts.user_id', 'outer.user_id'),
+        'author_posts_count'
+    )
+    ->from('posts as outer')
+    ->get();
+    return $posts;
+});
+//لیست یوزرها همراه با تاریخ آخرین پستشان
+Route::get('/selectSub3',function(){
+    $users = User::query()
+    ->select('id','name')
+    ->selectSub(
+        Post::select('created_at')
+        ->whereColumn('posts.user_id','users.id')
+        ->latest()
+        ->limit(1),'last_post'
+    )
+    ->get();
+    return $users;
+});
+//تعداد پست‌های هر کاربر است
+Route::get('/N+1',function(){
+    $users = User::all();
+    foreach($users as $user){
+        echo $user->posts->count().'<br>';
+    }
+});
+//تعداد پست‌های هر کاربر است
+Route::get('/with',function(){
+    $users = User::with('posts')->get();
+    foreach($users as $user){
+        echo $user->posts->count().'<br>';
+    }
+});
+//لیست کاربران به همراه تعداد پست هایشان
+Route::get('/with2',function(){
+    $users = User::with('posts')->get();
+    foreach($users as $user){
+        echo $user->name . 'counts of post = ';
+        echo $user->posts->count().'<br>';
+    }
+});
+//گرفتن همهٔ پست‌ها به‌همراه نویسنده‌شان
+Route::get('/with3',function(){
+    $posts = Post::with('user')->get();
+    foreach($posts as $post){
+        echo $post->title . 'wrote as = ';
+        echo $post->user->name .'<br>';
+    }
+});
+//گرفتن همهٔ پست‌ها به‌همراه نویسنده و کامنت‌ها
+Route::get('/with4',function(){
+    $posts = Post::with(['user','comments'])
+    ->get();
+    foreach($posts as $post){
+        echo $post->title . 'wrote as = ';
+        echo $post->user->name.'<br>' ;
+        foreach($post->comments as $comment)
+        {
+            echo 'COMMENTS :::::'.$comment->body.'<br>';
+        }
+        echo '<br>';
+    }
+});
+
+Route::get('/with4',function(){
+    $posts = Post::with(['user','comments'])
+    ->withCount('comments')
+    ->get();
+    foreach($posts as $post){
+        echo $post->title . 'wrote as = ';
+        echo $post->user->name.'<br>' ;
+        foreach($post->comments as $comment)
+        {
+            echo 'COMMENTS :::::'.$comment->body.'<br>';
+        }
+        echo $post->comments_count;
+        echo '<br>';
+        echo '<br>';
+    }
+});
+
+
+
 
 

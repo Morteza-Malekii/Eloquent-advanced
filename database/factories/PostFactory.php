@@ -19,7 +19,7 @@ class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            'title'=>fake()->title,
+            'title'=>fake()->unique()->sentence(4),
             'body'=>fake()->text(256),
             'user_id'=> User::inRandomOrder()->value('id'),
         ];
