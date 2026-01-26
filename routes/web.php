@@ -212,7 +212,7 @@ Route::get('/with4',function(){
     }
 });
 
-Route::get('/with4',function(){
+Route::get('/with5',function(){
     $posts = Post::with(['user','comments'])
     ->withCount('comments')
     ->get();
@@ -229,6 +229,45 @@ Route::get('/with4',function(){
     }
 });
 
+Route::get('/has',function(){
+    $users = User::whereHas('posts', function($q){
+    $q->where('title','LIKE','%st%');
+    })
+    ->with('posts',function($q){
+    $q->where('title','LIKE','%st%');
+    })
+    ->get();
+    foreach($users as $user){
+        echo $user->name;
+        echo '------------------------------';
+        echo $user->posts->count();
+        echo '<br>';
+        foreach($user->posts as $post )
+            {
+                echo $post->title;
+                echo '<br>';
+            }
+    }
+});
+//یوزرهایی که هیچ پستی با حداقل یک کامنت ندارند
+Route::get('/doesnt',function(){
+    $users = User::whereDoesntHave('posts.comments')
+    ->get();
+    foreach ($users as $user ) {
+        echo $user->name;
+    }
+});
+Route::get('/load',function(){
+    $users = User::all();
+    $users->loadMissing('posts');
+
+
+    foreach ($users as $user) {
+        foreach ($user->posts as $post) {
+            echo $post->title . '<br>';
+        }
+    }
+});
 
 
 
