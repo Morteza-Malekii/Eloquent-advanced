@@ -260,15 +260,74 @@ Route::get('/doesnt',function(){
 Route::get('/load',function(){
     $users = User::all();
     $users->loadMissing('posts');
-
-
     foreach ($users as $user) {
         foreach ($user->posts as $post) {
             echo $post->title . '<br>';
         }
     }
 });
+//یوزرهایی که پست دارند + لود کردن پست‌ها با load
+Route::get('/sample1',function(){
+    $users = User::has('posts')
+    ->get();
+    $users->load('posts');
 
+    foreach ($users as $user) {
+        echo $user->name . '<br>------------';
+        foreach ($user->posts as $post) {
+            echo $post->title .'<br>';
+        }
+    }
+});
+//یوزرهایی که هیچ پستی ندارند (doesntHave)
+Route::get('/ex2', function () {
+    $users = User::doesntHave('posts')->get();
+
+    foreach ($users as $user) {
+        echo $user->name . '<br>';
+    }
+});
+// پست‌هایی که حداقل ۳ کامنت دارند
+Route::get('/sample2',function(){
+    $posts = Post::has('comments','>=',3)
+    ->get();
+    $posts->load('comments');
+    foreach ($posts as $post) {
+            echo "<strong>{$post->title}</strong> (comments: {$post->comments->count()})<br>";
+            foreach ($post->comments as $comment) {
+               echo "- {$comment->body}<br>";
+            }
+        }
+});
+//یوزرهایی که پستی با «کلمه خاص» در عنوان دارند
+Route::get('/sample3',function(){
+    $users = User::whereHas('posts',function($q){
+        $q->where('title','LIKE','%ali%');
+    })
+    ->get();
+    $users->load(['posts'=> function($q){
+        $q->where('title','LIKE','%ali%');
+    }]);
+    foreach ($users as $user) {
+        echo "<strong> {$user->name} </strong> <br>";
+        foreach ($user->posts as $post) {
+            echo "- {$post->title} <br>";
+        }
+    }
+});
+// لیست پست‌ها + تعداد کامنت‌ها + فقط پست‌های کامنت‌دار
+Route::get('/sample4',function(){
+    $posts = Post::has('comments')
+    ->with('comments')
+    ->withCount('comments')
+    ->get();
+    foreach ($posts as $post) {
+        echo "<strong>{$post->title} </strong>----comments:{$post->comments_count} <br>";
+        foreach ($post->comments as $comment) {
+            echo "- {$comment->body} <br>";
+        }
+    }
+});
 
 
 
