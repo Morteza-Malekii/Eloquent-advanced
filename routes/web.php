@@ -328,6 +328,6 @@ Route::get('/sample4',function(){
         }
     }
 });
-
+ 
 
 
