@@ -1,7 +1,9 @@
 <?php
 
+use App\Enum\ImageType;
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
+use App\Models\Role;
 use App\Models\Scopes\activeScope;
 use App\Models\User;
 use Faker\Factory;
@@ -328,6 +330,33 @@ Route::get('/sample4',function(){
         }
     }
 });
- 
+Route::get('role',function(){
+    $user = User::with('roles')
+    ->find(1);
+    foreach ($user->roles as $role) {
+        echo "$role->name  <br>";
+    }
+});
+Route::get('role2',function(){
+    $role = Role::with('users')->find(2);
+    return $role->users;
+});
+
+Route::get('post-image',function(){
+    $post = Post::find(1);
+    // return $post->regularImage()->create([
+    //     'type'=> ImageType::Regular->value,
+    //     'path'=> './images/posts/regular/1.jpg',
+    // ]);
+    return $post->images;
+});
+Route::get('user-image',function(){
+    $user = User::find(1);
+    return $user->avatarImage()->create([
+        'type'=> ImageType::Avatar->value,
+        'path'=> './images/users/avatar/1.jpg',
+    ]);
+    // return $post->images;
+});
 
 

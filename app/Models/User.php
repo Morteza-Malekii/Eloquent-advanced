@@ -4,7 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Enum\ImageType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -55,8 +57,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Comment::class);
     }
-    public function roles()
+    public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class)->withTimestamps();
+    }
+    public function avatarImage()
+    {
+        return $this->morphOne(Image::class,'imageable')->where('type',ImageType::Avatar->value);
     }
 }

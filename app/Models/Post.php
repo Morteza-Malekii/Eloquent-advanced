@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enum\ImageType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\Rules\Enum;
 
 class Post extends Model
 {
@@ -34,5 +36,22 @@ class Post extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class,'commentable');
+    }
+
+    public function images()
+    {
+        return $this->morphMany(Image::class,'imageable');
+    }
+    public function avatarImage()
+    {
+        return $this->morphOne(Image::class,'imageable')->where('type', ImageType::Avatar->value);
+    }
+    public function coverImage()
+    {
+        return $this->morphOne(Image::class,'imageable')->where('type', ImageType::Cover->value);
+    }
+    public function regularImage()
+    {
+        return $this->morphMany(Image::class,'imageable')->where('type', ImageType::Regular->value);
     }
 }
