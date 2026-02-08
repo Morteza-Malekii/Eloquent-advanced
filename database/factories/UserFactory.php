@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Hash;
@@ -33,6 +34,16 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
+    public function configure(): static
+    {
+        return $this->afterCreating(function (User $user) {
+            Post::factory()
+            ->count(rand(5, 10))
+            ->for($user)
+            ->create();
+        });
+
+    }
 
     /**
      * Indicate that the model's email address should be unverified.
@@ -44,13 +55,5 @@ class UserFactory extends Factory
         ]);
     }
 
-    /**
-     * Get all of th posts for the UserFactory
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function posts(): HasMany
-    {
-        return $this->hasMany(Post::class);
-    }
+    
 }

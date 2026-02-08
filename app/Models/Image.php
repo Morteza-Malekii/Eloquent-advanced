@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\ImageType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -10,6 +11,9 @@ class Image extends Model
     protected $fillable = [
         'type',
         'path'
+    ];
+    protected $casts = [
+        'type'=>ImageType::class
     ];
     public function imageable(): MorphTo
     {

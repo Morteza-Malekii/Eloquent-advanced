@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Comment;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,13 +27,15 @@ class PostFactory extends Factory
         ];
     }
 
-    /**
-     * Get the user that owns the PostFactory
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user(): BelongsTo
+    public function configure()
     {
-        return $this->belongsTo(User::class);
+        return $this->afterCreating(function (Post $post) {
+            Comment::factory()
+            ->count(rand(2, 5))
+            ->for($post, 'commentable')
+            ->create();
+        });
     }
+
+    
 }

@@ -63,6 +63,8 @@ class User extends Authenticatable
     }
     public function avatarImage()
     {
-        return $this->morphOne(Image::class,'imageable')->where('type',ImageType::Avatar->value);
+        return $this->morphOne(Image::class,'imageable')
+        ->where('type',ImageType::Avatar->value)
+        ->latestOfMany();
     }
 }

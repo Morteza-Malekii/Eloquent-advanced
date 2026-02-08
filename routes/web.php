@@ -351,12 +351,12 @@ Route::get('post-image',function(){
     return $post->images;
 });
 Route::get('user-image',function(){
-    $user = User::find(1);
-    return $user->avatarImage()->create([
-        'type'=> ImageType::Avatar->value,
-        'path'=> './images/users/avatar/1.jpg',
-    ]);
-    // return $post->images;
+    $user = User::find(2);
+    // return $user->avatarImage()->create([
+    //     'type'=> ImageType::Avatar->value,
+    //     'path'=> './images/users/avatar/1.jpg',
+    // ]);
+    return $user->avatarImage;
 });
 
 

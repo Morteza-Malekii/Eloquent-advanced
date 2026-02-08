@@ -15,18 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1) نقش‌ها (دیتای واقعی سیستم)
+        $this->call(RoleSeeder::class);
 
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-        $this->call([
-            UserSeeder::class,
-            RoleSeeder::class,
-            RoleUserSeeder::class,
-            PostSeeder::class,
-            CommentSeeder::class
-        ]);
+        // 2) ساخت یوزرها + پست‌ها + کامنت‌ها (همه از طریق factoryها)
+        User::factory(20)->create();
+
+        // 3) اختصاص roleها به یوزرها (اگر هنوز RoleUserSeeder داری)
+        $this->call(RoleUserSeeder::class);
     }
 }
