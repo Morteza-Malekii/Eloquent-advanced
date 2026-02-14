@@ -61,10 +61,14 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
+    public function images()
+    {
+        return $this->morphMany(Image::class, 'imageable');
+    }
     public function avatarImage()
     {
-        return $this->morphOne(Image::class,'imageable')
-        ->where('type',ImageType::Avatar->value)
-        ->latestOfMany();
+        return $this->morphOne(Image::class, 'imageable')
+            ->where('type', ImageType::Avatar->value)
+            ->latestOfMany();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Image;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -23,5 +24,7 @@ class DatabaseSeeder extends Seeder
 
         // 3) اختصاص roleها به یوزرها (اگر هنوز RoleUserSeeder داری)
         $this->call(RoleUserSeeder::class);
+
+        $this->call(ImageSeeder::class);
     }
 }

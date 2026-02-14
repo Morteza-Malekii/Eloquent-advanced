@@ -1,13 +1,17 @@
 <?php
 
 use App\Enum\ImageType;
+use App\Models\Comment;
 use Illuminate\Support\Facades\Route;
 use App\Models\Post;
 use App\Models\Role;
 use App\Models\Scopes\activeScope;
 use App\Models\User;
 use Faker\Factory;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
+use Ramsey\Collection\Collection;
 
 use function Laravel\Prompts\select;
 use function PHPSTORM_META\map;
@@ -358,5 +362,54 @@ Route::get('user-image',function(){
     // ]);
     return $user->avatarImage;
 });
+Route::get('post/{post:ulid}',function(Post $post){
+    // return $post = Post::findOrFail($id);
+    return $post;
+});
+
+Route::scopeBindings()
+->get('post/{post:ulid}/comment/{comment}',function(Post $post, Comment $comment){
+    return $comment;
+    });
+
+Route::get('postCom',function(){
+    $post = Post::findOrFail(1);
+    return $post->comments->filter(fn($c) => $c->created_at > '2021-02-11')
+    ->sortByDesc('created_at')->values();
+});
+Route::get('each',function(){
+    Post::all()->each(function($p, $index){
+        echo "$index: ". $p->title . "<br>";
+    } );
+    // return Post::pluck('title');
+});
+Route::get('map2',function(){
+    $posts = Post::with('comments')->get();
+    $data = $posts->map(fn ($p) => [
+        'id'=>$p->id,
+        'title'=>$p->title,
+        'comment_count'=>$p->comments->count(),
+    ]);
+    return $data;
+});
+Route::get('map3',function(){
+    $posts = Post::with('comments')->get();
+    return $posts->filter(fn($p) =>
+        $p->comments->contains(fn($c)=>
+        str_contains($c->body,'ali')));
+});
+Route::get('map4',function(){
+    return Post::whereHas('comments',function($q){
+        $q->where('body','LIKE','%ali%');
+        })->get();
+});
+Route::get('save',function(){
+    $post = Post::find(1);
+    $post->update([
+        'title'=>'new update',
+    ]);
+    return $post->title;
+});
+
 
 
